@@ -517,6 +517,15 @@ class GptTurbo(Base):
             base_url = "https://api.openai.com/v1"
         super().__init__(key, model_name, base_url, **kwargs)
 
+    def _clean_conf(self, gen_conf):
+        if self.model_name != "gpt-6.1-sol":
+            return super()._clean_conf(gen_conf)
+        conf = super()._clean_conf(dict(gen_conf))
+        for key in ("temperature", "top_p", "top_logprobs", "logprobs", "presence_penalty", "frequency_penalty"):
+            conf.pop(key, None)
+        conf["reasoning_effort"] = gen_conf.get("reasoning_effort", "low")
+        return conf
+
 
 class XinferenceChat(Base):
     _FACTORY_NAME = "Xinference"
